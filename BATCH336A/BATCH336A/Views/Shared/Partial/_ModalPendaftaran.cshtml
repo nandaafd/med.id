@@ -1,0 +1,621 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using BATCH336A.ViewModel
+@{
+}
+
+<!-- MODAL 1 SET EMAIL-->
+<div class="modal fade" id="modalPendaftaran1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalToggleLabel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content mx-3">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" id="modalPendaftaranLabel1">Daftar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body mx-4">
+                <div class="h5">Selamat Datang!</div>
+                <div class="mb-3">Masukkan email Anda untuk mendaftar! Kami akan melakukan pengecekan</div>
+                <label class="form-label" for="inputEmail">Email<span class="text-danger">*</span></label>
+                <form id="frmEmail">
+                    <div class="mb-3 row">
+                        <div class="col-10">
+                            <input type="email" required class="form-control" id="inputEmail" required placeholder="Masukkan email anda disini" name="Email" />
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-outline-primary d-none px-3" id="btnLoadingCek" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span class="visually-hidden">Loading...</span>
+                            </button>
+                            <button id="btnCekEmail" class="btn btn-outline-primary">cek</button>
+                        </div>
+                    </div>
+                </form>
+                <div><ul id="errorContainer1"></ul></div>
+                <div id="placeholder1"></div>
+                <div class="text-center mt-5">sudah punya akun? <a class="text-primary" id="btnModalMasuk" data-bs-toggle="modal" data-bs-target="#modalLogin">masuk</a></div>
+            </div>
+            <div class="modal-footer text-center">
+                <button class="btn btn-primary disabled sendOtp" id="btnLanjut1" data-bs-toggle="modal" data-bs-target="#modalPendaftaran2" role="button">Kirim OTP</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL 2 OTP-->
+<div class="modal fade" id="modalPendaftaran2" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalToggleLabel2">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" id="modalPendaftaranLabel1">Verifikasi E-Mail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body mx-4">
+                <div class="mb-3">Masukkan kode OTP yang telah dikirimkan ke Email Anda</div>
+                <div class="input-group mb-3">
+                    <input type="number" maxlength="6" class="form-control" id="kodeOtp" name="Otp" required placeholder="KODE OTP" aria-describedby="btnSendOtp">
+                </div>
+                <div id="placeholderOtp"></div>
+                <div class="text-center">
+                    <a id="resendOtp" class="btn btnSendOtp d-none disabled">Kirim ulang kode OTP <span id="timer"></span></a>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-outline-primary d-none" id="btnLoadingVerif" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading...
+                    </button>
+                    <button id="btnVerifOtp" class="btn btn-outline-primary" disabled>Verifikasi OTP</button>
+                </div>
+            </div>
+            <div class="modal-footer mb-3">
+                <button class="btn btn-primary disabled" id="btnLanjut2" data-bs-toggle="modal" data-bs-target="#modalPendaftaran3" role="button">Lanjut</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL 3 PASSWORD-->
+<div class="modal" id="modalPendaftaran3" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalToggleLabel2">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" id="modalPendaftaranLabel1">Buat Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+                <form id="frmPassword">
+                    <div class="modal-body mx-4">
+                        <div class="mb-3">Buat password baru anda</div>
+                        <div class="mb-3">
+                            <label class="form-label" for="inputPassword">Password<span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="inputPassword" required placeholder="Masukkan password disini" name="Password" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="ulangiPassword">Ulangi Password<span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="ulangiPassword" required placeholder="Ulang password disini" name="ConfirmPassword" />
+                        </div>
+                        <div class="progress mb-3" role="progressbar" aria-label="Animated striped example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar progress-bar-animated" id="power-point" style="width: 0%">Penuhi level kekuatan password</div>
+                        </div>
+                        <button type="submit" hidden></button>
+                    </div>
+                </form>
+                <div><ul id="errorContainer2"></ul></div>
+                <div id="placeholder2">
+                </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnLanjutPassword" data-bs-toggle="modal" data-bs-target="#modalPendaftaran4" role="button">Lanjut</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL 4 DATA DIRI-->
+<div class="modal" id="modalPendaftaran4" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalToggleLabel2">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" id="modalPendaftaranLabel1">Daftar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frmDataDiri">
+                    <div class="mb-3">
+                        <label class="form-label" for="inputNama">Nama Lengkap<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="inputNama" required placeholder="Masukkan nama anda disini" name="Name" />
+                    </div>
+                    <label class="form-label" for="inputEmail">Nomor Telepon</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">+62</span>
+                        @* <input type="tel" pattern="^\+62[0-9]{9,12}$" maxlength="15" id="inputPhone" name="PhoneNumber" class="form-control" placeholder="input phone number" title="Nomor telepon harus diawali dengan +62 dan diikuti 9-12 digit angka"> *@
+                        <input type="tel" maxlength="15" id="inputPhone" name="PhoneNumber" class="form-control" placeholder="input phone number" title="Nomor telepon harus diawali dengan +62 dan diikuti 9-12 digit angka">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="inputEmail">Daftar Sebagai</label>
+                        <select class="form-select" name="RoleId" id="inputRole">
+                            <option value="0">--pilih--</option>
+                            @if (ViewBag.Role != null)
+                            {
+                                foreach (VMMRole data in ViewBag.Role)
+                                {
+                                    <option value="@data.Id">@data.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </form>
+                <div><ul id="errorContainer3"></ul></div>
+                <div id="placeholder4"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary btnSubmit" id="btnSubmit" data-bs-toggle="modal" data-bs-target="#" role="button">Daftar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function(){
+        $("#btnModalMasuk").click(function (e) {
+            $("#modalPendaftaran1").modal("hide");
+        })
+    })
+    //method validasi
+    $.validator.addMethod("noSpaces", function (value, element) {
+        return !/\s/.test(value);
+    }, "Tidak boleh mengandung spasi");
+
+    $.validator.addMethod("noMultipleSpaces", function (value, element) {
+        return !/\s{2,}/.test(value);
+    }, "Tidak boleh mengandung lebih dari satu spasi berturut-turut");
+
+    $.validator.addMethod("phonePrefix", function (value, element) {
+        return this.optional(element) || /^62/.test(value) || /^08/.test(value);
+    }, "Nomor telephone harus diawali '62' atau '08'.");
+    $.validator.addMethod("noSpaceFirstChar", function (value, element) {
+        return this.optional(element) || /^\S/.test(value);
+    }, "Karakter pertama tidak boleh spasi");
+
+
+    //validasi email
+    $("#frmEmail").validate({
+        errorClass: "text-danger ms-2 my-auto",
+        // errorLabelContainer: "#errorContainer1",
+        // wrapper: "li",
+        rules: { Email: { "required": true, "minlength": 3, "email": true, "noSpaces": true, "noSpaceFirstChar":true } },
+        messages: { Email: { "required": "email wajib diisi", "minlength": "email minimal terdiri dari 3 karakter", "email": "email harus valid", "noSpaceFirstChar":"karakter pertama tidak boleh spasi", "noSpaces": "tidak boleh mengandung spasi" } },
+        errorPlacement: function (error, element) {
+            error.insertAfter(element);
+        }
+    })
+
+    //check email
+    $("#btnCekEmail").click(function (e) {
+        e.preventDefault();
+        let email = $("#inputEmail").val();
+        if ($("#frmEmail").valid()) {
+            $("#btnCekEmail").addClass("d-none");
+            $("#btnLoadingCek").removeClass("d-none");
+            $.ajax({
+                url: "/Pendaftaran/CheckEmail",
+                type: "post",
+                dataType: "json",
+                data: { "data": email },
+                beforeSend: () => { },
+                success: function (response) {
+                    if (response.statusCode == 400 || response.statusCode == 404) {
+                        alert(response.message, "success","#placeholder1")
+                        $("#btnLanjut1").removeClass("disabled")
+                        $("#btnLoadingCek").addClass("d-none");
+                        $("#btnCekEmail").removeClass("d-none");
+                    }
+                    else {
+                        alert(response.message, "danger", "#placeholder1");
+                        $("#btnLoadingCek").addClass("d-none");
+                        $("#btnCekEmail").removeClass("d-none");
+                    }
+                },
+                error: function (errResponse) {
+                    alert(response.message, "danger", "#placeholder1");
+                    $("#btnLoadingCek").addClass("d-none");
+                    $("#btnCekEmail").removeClass("d-none");
+                }
+            })
+        }
+        
+    });
+    
+    // --- send otp ---
+    $("#btnLanjut1").click(function (e) {
+        $(this).removeClass("sendOtp");
+    })
+    let otpSent = false;
+    //send otp from email modal
+    $(".sendOtp").click(function (e) {
+        if (otpSent) {
+            // Jika OTP sudah dikirim, hanya lakukan aksi lain (misal buka modal lain)
+            return;
+        }
+        otpSent = true;
+        let email = $("#inputEmail").val();
+        $.ajax({
+            url: "/Pendaftaran/SendEmail/",
+            type: "post",
+            dataType: "json",
+            data: { "email": email },
+            beforeSend: () => { },
+            success: function (response) {
+                if (response.statusCode == 200) {
+                    //$("#btnVerifOtp").removeClass("disabled")
+                    alert(response.message, "success", "#placeholderOtp")
+                }
+                else {
+                    alert(response.message, "danger", "#placeholderOtp")
+                }
+            },
+            error: function (errResponse) {
+                alert(response.message, "danger", "#placeholderOtp")
+            }
+        })
+        $("#resendOtp").removeClass("d-none");
+    });
+    
+
+    //resend otp
+    $("#resendOtp").click(function (e) {
+        let email = $("#inputEmail").val();
+        $.ajax({
+            url: "/Pendaftaran/SendEmail/",
+            type: "post",
+            dataType: "json",
+            data: { "email": email },
+            beforeSend: () => { },
+            success: function (response) {
+                if (response.statusCode == 200) {
+                    alert(response.message, "success", "#placeholderOtp")
+                    //$("#btnVerifOtp").removeClass("disabled")
+                }
+                else {
+                    alert(response.message, "danger", "#placeholderOtp")
+                }
+            },
+            error: function (errResponse) {
+                alert(response.message, "danger", "#placeholderOtp")
+            }
+        })
+        $(this).addClass("disabled");
+    });
+  
+    
+
+    //--timer otp--
+    $("#resendOtp").click(function () {
+        var time = 10; // Waktu tunggu dalam detik
+        var resendButton = $('#resendOtp');
+        var timerElement = $('#timer');
+
+        // Fungsi untuk memperbarui waktu pada timer
+        var updateTimer = function (seconds) {
+            var minutes = Math.floor(seconds / 60);
+            var seconds = seconds % 60;
+
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            timerElement.text(minutes + ":" + seconds);
+        };
+
+        // Fungsi untuk mengatur ulang dan memulai timer
+        var startTimer = function (duration) {
+            var timer = duration, minutes, seconds;
+            var interval = setInterval(function () {
+                updateTimer(timer);
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    resendButton.removeClass("disabled")
+                    timerElement.text("");
+                }
+            }, 1000);
+        };
+
+        // Mengaktifkan timer ketika halaman dimuat
+        startTimer(time);
+
+        // Event handler untuk tombol kirim ulang
+        resendButton.click(function () {
+            resendButton.addClass("disabled");
+            startTimer(time); // Memulai timer
+        });
+    });
+
+    let timerOtp = false;
+    $(".sendOtp").click(function () {
+        if (timerOtp) {
+            // Jika OTP sudah dikirim, hanya lakukan aksi lain (misal buka modal lain)
+            return;
+        }
+        timerOtp = true;
+        var time = 30; // Waktu tunggu dalam detik
+        var resendButton = $('#resendOtp');
+        var timerElement = $('#timer');
+
+        // Fungsi untuk memperbarui waktu pada timer
+        var updateTimer = function (seconds) {
+            var minutes = Math.floor(seconds / 60);
+            var seconds = seconds % 60;
+
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            timerElement.text(minutes + ":" + seconds);
+        };
+
+        // Fungsi untuk mengatur ulang dan memulai timer
+        var startTimer = function (duration) {
+            var timer = duration, minutes, seconds;
+            var interval = setInterval(function () {
+                updateTimer(timer);
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    resendButton.removeClass("disabled")
+                    timerElement.text("");
+                }
+            }, 1000);
+        };
+
+        // Mengaktifkan timer ketika halaman dimuat
+        startTimer(time);
+
+        // Event handler untuk tombol kirim ulang
+        resendButton.click(function () {
+            resendButton.addClass("disabled")
+            startTimer(time); // Memulai timer
+        });
+    });
+
+
+    let inputOtp = $("#kodeOtp");
+    inputOtp.on('input', function () {
+        let inputValue = inputOtp.val();
+
+        if (inputValue.trim() !== "") {
+            $("#btnVerifOtp").prop('disabled', false);
+        } else {
+            $("#btnVerifOtp").prop('disabled', true);
+        }
+    });
+    $('#kodeOtp').on('input', function () {
+        if (this.value.length > 6) {
+            this.value = this.value.slice(0, 6);
+        }
+    });
+
+
+
+    //VerifOTP
+    $("#btnVerifOtp").click(function (e) {
+        let otp = $("#kodeOtp").val();
+        let email = $("#inputEmail").val();
+        $("#btnVerifOtp").addClass("d-none");
+        $("#btnLoadingVerif").removeClass("d-none");
+        $.ajax({
+            url: "/Pendaftaran/VerifOtp/",
+            type: "post",
+            dataType: "json",
+            data: { "InputOtp": otp, "email":email },
+            beforeSend: () => { },
+            success: function (response) {
+                if (response.statusCode == 200) {
+                    alert("Verifikasi Kode OTP Berhasil", "success", "#placeholderOtp")
+                    $("#btnLanjut2").removeClass("disabled");
+                    $("#btnLoadingVerif").addClass("d-none");
+                    $("#btnVerifOtp").removeClass("d-none");
+                    $("#btnVerifOtp").addClass("disabled");
+                    $("#resendOtp").addClass("disabled");
+                }
+                else if (response.statusCode == 204) {
+                    alert("Kode OTP anda kadaluarsa, silahkan kirim ulang OTP", "danger", "#placeholderOtp")
+                    $("#btnLoadingVerif").addClass("d-none");
+                    $("#btnVerifOtp").removeClass("d-none");
+                }
+                else if (response.statusCode == 404) {
+                    alert("Kode OTP anda salah", "danger", "#placeholderOtp")
+                    $("#btnLoadingVerif").addClass("d-none");
+                    $("#btnVerifOtp").removeClass("d-none");
+                }
+            },
+            error: function (errResponse) {
+                alert("Gagal verifikasi kode OTP", "danger", "#placeholderOtp")
+                $("#btnLoadingVerif").addClass("d-none");
+                $("#btnVerifOtp").removeClass("d-none");
+            }
+        })
+    });
+
+    //Validasi Password
+        $("#frmPassword").validate({
+            errorClass: "text-danger my-auto",
+            // errorLabelContainer: "#errorContainer2",
+            // wrapper: "li",
+            rules: {
+                Password: {
+                    "required": true,
+                    "noSpaces":true,
+                    "strongPassword": true,
+                    "noSpaceFirstChar":true
+                },
+                ConfirmPassword: {
+                    "required": true,
+                    "noSpaces": true,
+                    "validatePassword": true,
+                    "noSpaceFirstChar": true
+                }
+            },
+            messages: {
+                Password: {
+                    "required": "Password wajib diisi!",
+                    "noSpaces":"Password tidak boleh mengandung spasi"
+                },
+                ConfirmPassword: {
+                    "required": "Ulangi Password wajib diisi!",
+                    "noSpaces":"Password tidak boleh mengandung spasi"
+                },
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+            }
+        });
+
+        $.validator.addMethod(
+            "strongPassword",
+            function (val, el) {
+                return (/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@@!#$%&])(.{8,20})$/.test(val));
+            },
+            function (cRespon, el) {
+                let pass = $(el).val();
+                let txtAlert = "";
+
+
+                if (!(/^(?=.*[!@@#$%&])/.test(pass))) {
+                    txtAlert += "Password harus mengandung spesial karakter <br>";
+                }
+                if (!(/^(?=.*[a-z])/.test(pass))) {
+                    txtAlert += "Password harus mengandung huruf kecil <br>";
+                }
+                if (!(/^(?=.*[A-Z])/.test(pass))) {
+                    txtAlert += "Password harus mengandung huruf besar <br>";
+                }
+                if (!(/^(?=.*[0-9])/.test(pass))) {
+                    txtAlert += "Password harus mengandung angka <br>";
+                }
+                if (!(/^(.{8})/.test(pass))) {
+                    txtAlert += "Password harus lebih dari 8 karakter <br>";
+                }
+
+                if (txtAlert == "") {
+                    return txtAlert;
+                }
+                else {
+                    return txtAlert;
+                }
+            }
+        );
+        $.validator.addMethod(
+            "validatePassword",
+            function (val, el) {
+                return val === $("#inputPassword").val();
+            },
+            "Password tidak sama!"
+        )
+
+        let password = document.getElementById("inputPassword");
+        let power = document.getElementById("power-point");
+
+        password.oninput = function () {
+            let point = 0;
+            let value = password.value;
+            let widthPower =
+                ["1%", "20%", "40%", "60%", "80%", "100%"];
+            let colorPower =
+                ["#D73F40", "#DC6551", "#F2B84F", "#BDE952", "#3ba62f"];
+
+            if ((/^(.{8})/.test(value))) {
+                point += 1;
+            }
+            let arrayTest =
+                [/[0-9]/, /[a-z]/, /[A-Z]/, /[!@@#$%&]/];
+            arrayTest.forEach((item) => {
+                if (item.test(value)) {
+                    point += 1;
+                }
+
+            });
+
+
+            power.style.width = widthPower[point];
+            power.style.backgroundColor = colorPower[point];
+        };
+
+        $("#btnLanjutPassword").click(function(e){
+            e.preventDefault()
+        })
+
+
+        //validasi data diri
+        $("#frmDataDiri").validate({
+            errorClass: "text-danger ms-2 my-auto",
+            // errorLabelContainer: "#errorContainer3",
+            // wrapper: "li",
+            rules: {
+                Name: { "required": true, "minlength": 3, "noMultipleSpaces": true, "noSpaceFirstChar": true, },
+                PhoneNumber: { "minlength": 11, "noSpaces": true, "phonePrefix": true, "noSpaceFirstChar": true, },
+        },
+            messages: {
+                Name: { "required": "nama wajib diisi", "minlength": "nama minimal terdiri dari 3 karakter", "noSpaceFirstChar":"karakter pertama tidak boleh spasi", "noMultipleSpaces": "nama tidak boleh mengandung spasi lebih dari 1" },
+                PhoneNumber: { "minlength": "nomor minimal terdiri dari 11 angka", "noSpaces": "tidak boleh mengandung spasi", "phonePrefix": "nomor telepon harus diawali 62 atau 08", "noSpaceFirstChar": "karakter pertama tidak boleh spasi" },
+            },
+            errorPlacement: function (error, element) {
+                if (element.attr("name") == "PhoneNumber") {
+                    error.insertAfter(element.closest('.input-group'));
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        })
+
+        //phone
+        // $('#inputPhone').on('input', function () {
+        //     var x = $(this).val().replace(/\D/g, '').match(/(\d{0,4})(\d{0,4})(\d{0,4})/);
+        //     $(this).val(!x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : ''));
+        // });
+
+
+        //submit process
+
+    $(".btnSubmit").click(function (e) {
+        let email = $("#inputEmail").val();
+        let password = $("#inputPassword").val();
+        let kodeotp = $("#kodeOtp").val();
+        let nama = $("#inputNama").val();
+        let phone = $("#inputPhone").val();
+        let role = $("#inputRole").val();
+
+        if ($("#frmDataDiri").valid()) {
+            e.preventDefault();
+            $.ajax({
+                url: "/Pendaftaran/Add",
+                type: "post",
+                dataType: "json",
+                data: {
+                    "Biodatum": {
+                        "Fullname": nama,
+                        "MobilePhone": phone,
+                    },
+                    "UserData": {
+                        "Email": email,
+                        "Password": password,
+                        "RoleId": role
+                    }
+                },
+                beforeSend: () => { },
+                success: function (response) {
+                    if (response.statusCode == 200 || response.statusCode == 201) {
+                        location.reload();
+                    }
+                    else {
+                        alert("gagal mendaftar","danger","placeholder4");
+                    }
+                },
+                error: function (errResponse) {
+                    debugger;
+                }
+            })
+        }
+        
+
+    })
+</script>

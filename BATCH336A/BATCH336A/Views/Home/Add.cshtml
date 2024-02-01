@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Create Menu";
+}
+@model VMMMenu?
+
+
+<div class="card">
+    <div class="card-header h3 mb-4"><b>Tambah Menu Baru</b></div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <form id="frmAddMenu" asp-controller="Home" asp-action="Add" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" placeholder="Menu Name" aria-label="Name" name="Name" id="Name">
+                        <input type="hidden" name="CreateBy" id="CreateBy" value="1" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Url</label>
+                        <input type="text" class="form-control" placeholder="Url" name="Url" id="Url">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ikon Kecil</label>
+                        <input type="text" class="form-control" placeholder="SmallIcon" name="SmallIcon" id="SmallIcon">
+                    </div>
+                    <div class="form-group files mb-3" id="newImage">
+                        <label>Unggah gambar ikon besar </label>
+                        <input type="file" class="form-control" multiple="" id="imageFile" name="ImageFile">
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary w-100" type="submit" id="btnSubmitAddProduct"><i class="fa-solid fa-save"></i> Simpan</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col">
+                <div class="bg-details text-center d-none" id="oldImageView">
+                    <img src="" id="editImage"
+                         class="img-fluid card-img-top" style="height: 25rem; width: 37rem;" />
+                </div>
+                <div class="bg-details text-center" id="nullImageView">
+                    <img src="~/@ViewBag.ImgFolder/image-empty.png"
+                         class="img-fluid card-img-top" style="height: 25rem; width: 37rem;" />
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $("#frmAddMenu").validate({
+
+    });
+
+
+    $("#imageFile").click(function (e) {
+        //memilih file
+        function handleFileSelect(event) {
+            const imageFile = event.target;
+
+            if (imageFile.files.length > 0) {
+                //FileReader membaca file sebagai URL data (readAsDataURL).
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    //Fungsi IamgeDataUrl menyetel atribut src dari elemen gambar ke URL data ini.
+                    const imageDataUrl = document.getElementById("editImage");
+                    imageDataUrl.src = e.target.result;
+                };
+
+                // Mulai membaca file sebagai url
+                reader.readAsDataURL(imageFile.files[0]);
+
+                $("#oldImageView").removeClass('d-none');
+                $("#nullImageView").addClass('d-none');
+            }
+            else {
+                $("#oldImageView").addClass('d-none');
+                $("#nullImageView").removeClass('d-none');
+            }
+        }
+
+        // Menambahkan event listener untuk input file
+        const imageFile = document.getElementById("imageFile");
+        imageFile.addEventListener("change", handleFileSelect);
+    });
+
+    
+
+</script>

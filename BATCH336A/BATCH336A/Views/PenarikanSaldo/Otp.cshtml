@@ -1,0 +1,18 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = null;
+}
+
+<form>
+    <div>
+        <h6>Proses Penarikan Saldo Berhasil</h6>
+        <h6>OTP anda adalah :@ViewBag.Otp </h6>
+        <h6>*otp akan kadluwarsa setelah 1 jam</h6>
+
+    </div>
+    <div id="openBtnConfirm" class=" d-md-flex justify-content-md-center">
+        <button type="button" onclick="location.reload()" class="btn btn-primary" style="">Selesai</button>
+    </div>
+</form>

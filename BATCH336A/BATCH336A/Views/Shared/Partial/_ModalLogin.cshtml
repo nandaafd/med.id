@@ -1,0 +1,154 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="modal fade" id="modalLogin" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalToggleLabel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content mx-3">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" id="modalLoginLabel">Masuk</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body mx-4">
+                <div class="h5">Selamat Datang Kembali</div>
+                <div class="mb-3">Masukkan email dan password anda untuk masuk</div>
+                <form id="formLogin">
+                    <div>
+                        <div class="mb-3">
+                            <label>Email</label>
+                            <input required type="email" name="Email" class="form-control form_login" placeholder="Masukkan email disini">
+                            <div id="placeholderEmail"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Password</label>
+                            <input required id="password" type="password" name="Password" class="form-control form_login" placeholder="masukkan password disini.." aria-describedby="passBtn">
+                            <div id="placeholderPassword"></div>
+                        </div>
+                        <div class="input-group mb-3">
+                            @* <button class="btn mb-3" onclick="togglePassword()" type="button" id="passBtn"></button> *@
+                        </div>
+                        <div id="placeholderLogin"></div>
+                        <div><ul id="errorCheckLogin"></ul></div>
+                        <div id="alertCekLogin"></div>
+                        <center>
+                            <button id="btnSubmitLogin" type="submit" class="btn btn-outline-primary w-100">MASUK</button>
+                            <button class="btn btn-outline-primary d-none w-100" id="btnLoadingLogin" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                            </button>
+                        </center>
+                        <br />
+                        <div class="text-center">
+                            <div>
+                                <a asp-action="Index" asp-controller="Auth">Lupa Password ?</a>
+                            </div>
+                            <div>
+                                <span>atau</span>
+                            </div>
+                            <span>Belum memiliki akun?</span><a id="btnModalDaftar" data-bs-toggle="modal" data-bs-target="#modalPendaftaran1" class="text-decoration-none text-primary"> daftar</a>
+                        </div>
+                    </div>
+                </form>
+                <div><ul id="errorContainerLogin"></ul></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#btnModalDaftar").click(function (e) {
+            $("#modalLogin").modal("hide");
+        })
+    })
+    $("#formLogin").validate({
+        errorClass: "text-danger my-auto",
+        // errorLabelContainer: "#errorCheckLogin",
+        // wrapper: "li",
+        rules: {
+            Email: {
+                "required": true,
+                email:true
+            },
+            Password: {
+                "required": true
+            }
+        },
+        messages: {
+            Email: {
+                email : "masukkan alamat yang valid",
+                "required": "Email harus terisi!"
+            },
+            Password: {
+                "required": "Password harus terisi!"
+            }
+        },
+        errorPlacement: function (error, element) {
+            error.insertAfter(element);
+        }
+    });
+
+    $("#btnSubmitLogin").click(function (e) {
+        e.preventDefault();
+        if ($("#formLogin").valid()) {
+            $("#btnSubmitLogin").addClass("d-none");
+            $("#btnLoadingLogin").removeClass("d-none");
+            $.ajax({
+                url: "/Auth/Login",
+                type: "post",
+                dataType: "json",
+                data: $("#formLogin").serialize(),
+                beforeSend: () => { },
+                success: function (response) {
+                    if (response.statusCode == 200) {
+                        $("#modalLogin").modal("hide");
+                        $("#btnLoadingLogin").addClass("d-none");
+                        $("#btnSubmitLogin").removeClass("d-none");
+                        setTimeout(() => {
+                            location.reload();
+                        },2000)
+                        alert('Login Berhasil, Selamat datang!', 'success', "#placeholderHome");
+                    }
+                    else if (response.statusCode == 204) {
+                        $("#btnLoadingLogin").addClass("d-none");
+                        $("#btnSubmitLogin").removeClass("d-none");
+                        alert('Password anda salah!', 'danger',"#placeholderPassword");
+                    }
+                    else if (response.statusCode == 403) {
+                        $("#btnLoadingLogin").addClass("d-none");
+                        $("#btnSubmitLogin").removeClass("d-none");
+                        alert('Akun anda terblokir, silahkan buat akun baru!', 'danger', "#placeholderLogin");
+                    }
+                    else {
+                        $("#btnLoadingLogin").addClass("d-none");
+                        $("#btnSubmitLogin").removeClass("d-none");
+                        alert('Email anda salah!', 'danger', "#placeholderEmail");
+                    }
+                },
+                error: function (errResponse) {
+                    
+                }
+            })
+
+        }
+    });
+
+    $("#passBtn").addClass("fas fa-eye");
+
+    function togglePassword() {
+        let passwordInput = $("#password");
+
+        if (passwordInput.attr("type") == "password") {
+            passwordInput.attr("type", "text");
+            $("#passBtn").addClass("fa-solid fa-eye-slash");
+            $("#passBtn").removeClass("fas fa-eye");
+        }
+        else {
+            passwordInput.attr("type", "password");
+            $("#passBtn").removeClass("fa-solid fa-eye-slash");
+            $("#passBtn").addClass("fas fa-eye");
+        }
+    }
+
+</script>
+    

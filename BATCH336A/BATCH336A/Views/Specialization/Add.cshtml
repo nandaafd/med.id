@@ -1,0 +1,96 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = null;
+}
+
+<form id="frmSpecialization" asp-action="Add" asp-controller="Specialization">
+    <div class="card">
+        <div class="card-body">
+            <div class="input-group mb-3">
+                <label class="input-group-text col-3">Name<span class="text-danger">*</span></label>
+                <input required name="Name" id="name" type="text" class="form-control" placeholder="Input Specialization Name..." aria-label="CategoryName" aria-describedby="basic-addon1">
+
+            </div>
+            <div>
+                <ul class="text-danger" id="errorContainer"></ul>
+            </div>
+                <input name="CreatedBy" type="hidden" value="@Context.Session.GetInt32("userId")" class="form-control">
+        </div>
+        @* <div id="errorContainer" class="text-danger" aria-hidden="true"><ul></ul></div> *@
+        <div class="card-footer d-flex justify-content-end">
+            <input class="btn btn-primary" type="submit" value="Submit">
+            <button class="btn btn-secondary ms-2" type="button" data-bs-dismiss="modal">cancel</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    $("#staticModalLabel").html("@ViewBag.Title");
+
+    $("#frmSpecialization").validate({
+        errorClass: "text-danger",
+        errorLabelContainer: "#errorContainer",
+        wrapper: "li",
+        rules: {
+            Name: {
+                minlength: 2,
+                maxlength: 50,
+                "required": true,
+                "noSpacesOnly": true
+            }
+        },
+        messages: {
+            Name: {
+                minlength: "Nama harus memiliki minimal 2 huruf",
+                maxlength: "Nama harus memiliki Maksimal 50 huruf",
+                "required": "Nama Spesialisasi / Sub-Spesialisasi harus diisi",
+                "noSpacesOnly": "Input tidak boleh hanya berisi spasi"
+            }
+        }
+    });
+
+    $("#frmSpecialization").submit(function (event) {
+        //Disable submit default
+        event.preventDefault();
+
+        // String containing multiple spaces
+        let str = $("#name").val();
+
+        // Replace multiple spaces with single space
+        let name = str.trim().split(/[\s,\t,\n]+/).join(' ');
+        $("#name").val(name);
+
+        if ($("#frmSpecialization").valid()) {
+
+            $.ajax({
+                url: '/Specialization/Add',
+                type: 'post',
+                data: $("#frmSpecialization").serialize(),
+                dataType: 'json',
+                beforeSend: function () {
+
+                },
+                success: function (response) {
+                    debugger;
+                    if (response.statusCode == 200 || response.statusCode == 201) {
+                        location.reload();
+                    }
+                    else { 
+                        debugger;
+                        $("#errorContainer").html("<li>" + response.message + "</li>");
+                        $("#errorContainer").show();
+                    }
+                },
+                error: function (errResponse) {
+                    debugger;
+                }
+            });
+        }
+    });
+
+    $.validator.addMethod("noSpacesOnly", function (value, element) {
+        return /\S/.test(value);
+    }, "Cannot be all spaces");
+</script>

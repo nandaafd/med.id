@@ -1,0 +1,23 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = null;
+}
+<form>
+    <div>
+        <h6>Sukses Melakukan Authentikasi!</h6>
+    </div>
+    <div id="openBtnConfirm" class=" d-md-flex justify-content-md-center">
+        <button type="button" id="openConfirm" class="btn btn-primary" style="">OKE</button>
+    </div>
+</form>
+
+<script>
+     $("#staticModalLabel").html("@ViewBag.Title");
+     $("#openConfirm").click(function(event){
+        debugger;
+        $("#lastConfirm").removeAttr("disabled")
+        $("#staticModal").modal("hide")
+    })
+</script>

@@ -1,0 +1,132 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model VMEducationLevel?
+@{
+    Layout = null;
+}
+<form id="frmEditEduLevel" asp-controller="EducationLevel" asp-action="Edit">
+<div class="card">
+    <div>
+        <input type="hidden" name="ModifiedBy" value="1"/>
+        <input type="hidden" name="Id" value="@Model.Id"/>
+        <input id="hiddenName" type="hidden" value="@Model.Name"/>
+
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Category Name</label>
+        <input type="text" class="form-control" name="Name" 
+        id="nameInput" placeholder="Input Education Level Name" value="@Model.Name">
+      </div>
+      <div id="errorContainer" class="text-danger" aria-hidden="true"><ul></ul></div>
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+</div>
+</form>
+<script>
+        $("#staticModalLabel").html("@ViewBag.Title");
+        //$("#frmEditCategory").validate();
+
+        $.validator.addMethod(
+            "validationName",
+            function (val,el){
+            //check name with regex
+            debugger
+            return !(/^(?=.*[@@#$%^&*\-()_+=\/.,])/.test(val))
+            },
+            function(chckRes, el){
+                let pass= $(el).val();
+                let txtAlert = "Request Salah!";
+                debugger
+                if((/^(?=.*[@@#$%^&*\-()_+=\/.,])/.test(pass))){
+                    txtAlert = "Tidak boleh mengandung karakter <br>"
+                    console.log(txtAlert)
+                }
+                if (txtAlert == "Request Salah!"){
+                    return false;
+                }
+                else{
+                    return txtAlert
+                }
+            }
+        )
+
+        $("#frmEditEduLevel").validate({
+            errorClass: "text-danger",
+            errorLabelContainer: "#errorContainer",
+            wrapper: "li",
+            rules: {
+                Name :{
+                    "required": true,
+                    "minlength": 1,
+                    "validationName":true
+                }
+            },
+            messages: {
+                Name: {
+                    "required": "Harus Diisi",
+                    "minlength": "Harus lebih dari 1 karakter",
+                }
+            }
+        })
+
+        $("#frmEditEduLevel").submit(function(event){
+            event.preventDefault();
+            $("#errorContainer ul").empty()
+            if($("#frmEditEduLevel").valid()){
+                let oldName = $("#hiddenName").val()
+                let newName = $("#nameInput").val()
+                $.ajax({
+                    url: '/EducationLevel/Edit',
+                    type: 'post',
+                    data: $("#frmEditEduLevel").serialize(),
+                    dataType: 'json',
+                    beforeSend: function(){
+                    },
+                    success: function(response){
+                        console.log(response)
+                        if(response.statusCode == 200 || response.statusCode == 201){
+                            alert("Berhasil mengupdate data " + response.data.name ) 
+                            location.reload();
+                        }
+                        else{
+                            $("#errorContainer ul").html("<li>" + response.message + "</li>");
+                            $("#errorContainer").show();
+                            //alert(response.message);
+                        }
+                    },
+                    error: function(errResponse){
+                    }
+                });
+            }
+        });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

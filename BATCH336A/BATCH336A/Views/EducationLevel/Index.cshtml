@@ -1,0 +1,76 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<VMEducationLevel>?
+@{
+    int nomor = 1;
+}
+<partial name="Partial/_ModalMedic" />
+
+<div class="card">
+    <div class=" card-header h1 text-center">
+      Education Level
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between" >
+            <button class="btn btn-primary mb-3" title="Add.." data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fa-solid fa-plus"></i></button>
+            <form class="mb-3 w-50" id="frmFilter" asp-controller="EducationLevel" asp-action="Index">
+                <div class="input-group">
+                    <input name="filter" id="filter" type="text" class="form-control" placeholder="Search By Education Level" 
+                    aria-label="Filter" aria-describedby="iSearch" value="@ViewBag.Filter"/>
+                    <button type="submit" class="input-group-text" id="basic-addon2"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </form>
+        </div>
+            <table class="table text-center table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (Model != null)
+                {
+                    @foreach (VMEducationLevel data in Model)
+                    {
+                        <tr class="text-center">
+                            <td class="col-1">@nomor</td>
+                            <td class="col-8">@data.Name.ToUpper()</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-success" title="Edit.." data-id="@data.Id" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticModal" data-id="@data.Id" title="Delete.."><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        nomor++;
+                    }
+                }
+                else
+                {
+                    <tr > 
+                        <marquee direction="right">
+                                <td colspan ="3" class="text-center">Tidak ada data</td>
+                        </marquee>
+                    </tr>    
+                }
+                </tbody>
+            </table>
+    </div>
+</div>
+<script>
+
+    $(".btn-primary").click(function(event){
+    $("#staticModalBody").load("/EducationLevel/Add");
+    })
+    $(".btn-success").click(function(event){
+        let catId = $(this).data("id");
+    $("#staticModalBody").load("/EducationLevel/Edit/"+catId)
+    })
+    $(".btn-danger").click(function(event){
+        let catId = $(this).data("id");
+    $("#staticModalBody").load("/EducationLevel/Delete/"+catId)
+    })
+</script>

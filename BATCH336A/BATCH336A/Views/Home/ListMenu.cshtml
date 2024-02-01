@@ -1,0 +1,48 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model List<VMMMenu>
+@{
+    int numb = 1;
+}
+<div>
+    <div>
+        <a class="btn btn-primary" asp-controller="Home" asp-action="Add"><i class="fas fa-plus"></i> Tambah Menu</a>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Url</th>
+                <th>Big Icon</th>
+                <th>Small Icon</th>
+                <th>Action</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Count > 0)
+            {
+                @foreach (VMMMenu data in Model)
+                {
+                    <tr>
+                        <td>@numb</td>
+                        <td>@data.Name</td>
+                        <td>@data.Url</td>
+                        <td>@data.SmallIcon</td>
+                        <td>@data.BigIcon</td>
+                        <td>
+                            <a class="btn btn-success" asp-action=""><i class="fas fa-pencil"></i></a>
+                        </td>
+                    </tr>
+                    numb++;
+                }
+            }
+            else
+            {
+                <tr colspan="6"><td>No data</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

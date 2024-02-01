@@ -1,0 +1,19 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<div class="row">
+    <div class="col-4"></div>
+    <div class="card col-4 mt-5">
+        <form id="frmIdDetail" asp-controller="PenarikanSaldo" asp-action="HalAwal" method="post">
+            <div class="mb-3">
+                <label style="font-size: 25px;color:black"  class="form-label">Id Customer<span class="text-danger">*</span></label>
+                <input style="font-size: 15px;color:black" type="number" class="form-control width: 20px" name="id"
+                id="idInput" placeholder="Input Id Customer">
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="submit" class="btn btn-primary " style="font-size: 15px">Submit</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-4"></div>
+</div>

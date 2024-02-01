@@ -1,0 +1,49 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <button type="button" id="sidebarCollapse" class="btn btn-primary">
+            <i class="fa fa-bars"></i>
+            <span class="sr-only">Toggle Menu</span>
+        </button>
+        <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fa fa-bars"></i>
+        </button>
+        <form>
+            <div class="input-group ms-3">
+                <input type="text" class="form-control" placeholder="Cari sesuatu.." aria-label="Recipient's username" aria-describedby="button-addon2">
+                <button class="btn btn-outline-primary" type="button" id="button-addon2"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+        </form>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="me-2">
+                        <div class="mt-1">
+                            @(Context.Session.GetString("userFullname") != null ? "Halo, "+ Context.Session.GetString("userFullname") : "")
+                        </div>
+                    </li>
+                    <li class="nav-item @(Context.Session.GetInt32("userId") != null ? "":"d-none")">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle pe-3" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-gear"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item" href="/Profile"><i class="fas fa-user"></i> Profile</a></li>
+                                <li><a class="dropdown-item" asp-controller="Auth" asp-action="Logout"><i class="fas fa-door-open"></i> Keluar</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-gear"></i> Pengaturan</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item  @(Context.Session.GetInt32("userId") != null ? "d-none":"")">
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalPendaftaran1">Daftar</button>
+                    </li>
+                    <li class="nav-item  @(Context.Session.GetInt32("userId") != null ? "d-none":"")">
+                        <button class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#modalLogin">Masuk</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+</nav>

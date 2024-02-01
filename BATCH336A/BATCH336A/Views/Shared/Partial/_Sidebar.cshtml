@@ -1,0 +1,49 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    int? roleId = Context.Session.GetInt32("userRoleId");
+    if (roleId == null)
+    {
+        roleId = null;
+    }
+}
+<nav id="sidebar" class="active">
+    <h1><a asp-controller="Home" asp-action="Index" class="logo"><span class="fas fa-stethoscope"></span> <span id="appName" style="font-size:20px;">Med.Id 336</span></a></h1>
+    <ul class="list-unstyled components mb-5">
+        <li>
+            <a href="/Home" title="Beranda"><i class="fas fa-house"></i> <span id="tittle"> Beranda</span></a>
+        </li>
+        @if (ViewBag.Menu != null)
+        {
+            foreach (VMMMenu menu in ViewBag.Menu)
+            {
+                if (menu.Roles.Any(r => r.RoleId == roleId) || menu.Roles.Any(r => r.RoleId == 5))
+                {
+                    if(menu.SmallIcon != null)
+                    {
+                        @* <li class="active">
+                            <a href="@menu.Url" title="@menu.Name">@Html.Raw(menu.SmallIcon) <span id="tittle">@menu.Name</span></a>
+                        </li> *@
+                        if (menu.ParentId == null || menu.ParentId == 0)
+                        {
+                            <li class="active">
+                                <a href="#pageSubmenu-@menu.Id" data-toggle="collapse" aria-expanded="false" id="btnMenuDropdown" class="dropdown-toggle">@Html.Raw(menu.SmallIcon) <span id="tittle">@menu.Name</span></a>
+                                    <ul class="collapse list-unstyled" id="pageSubmenu-@menu.Id">
+                                        @foreach (VMMMenu submenu in ViewBag.Menu)
+                                        {
+                                            if (submenu.ParentId != null && submenu.ParentId == menu.Id)
+                                            {
+                                            <li><a href="@submenu.Url" style="color:yellow;" title="@menu.Name">@Html.Raw(submenu.SmallIcon) <span id="tittle">@submenu.Name</span></a></li>
+                                            }
+                                        }
+                                    </ul>
+                            </li>
+                        }
+                    }
+                }
+            }
+        }
+
+</nav>

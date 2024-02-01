@@ -1,0 +1,45 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="d-flex">
+    <div class="w-25">
+        <div class="card-body profile-card d-flex justify-content-center "  >
+            <img class="rounded-circle" style="height:166px; width:166px" src="~/images/emptyImage.png"/>
+        </div>
+        <div class="d-flex mb-0 justify-content-center" style="color:darkorange;font-size:20px">
+            <div class="mb-0" style="text-align:center">
+               <i class="fa-solid fa-star"></i>
+               <i class="fa-solid fa-star"></i>
+               <i class="fa-solid fa-star"></i>
+               <i class="fa-solid fa-star"></i>
+            </div>
+        </div>
+        <div class="mb-0 mt-0"style="font-size:15px;text-align:center">Bronze Member</div>
+        <div class="mb-5 mt-0"style="font-size:15px;text-align:center">Since 2024</div>
+        <div><a href="">Pasien</a></div>
+        <div><a href="">Pembelian Obat</a></div>
+        <div><a href="">Rencana Kedatangan</a></div>
+        <div><a href="">Riwayat Chat Dokter</a></div>
+    </div>
+    <div class="w-75">
+        <div class="d-flex gap-3">
+            <a type="button"><span class="text-center">Profil</span></a>
+            <a type="button"><span class="text-center">Alamat</span></a>
+            <a type="button"><span class="text-center">Pembayaran</span></a>
+            <a type="button" id="menuTransaksi" data-id="@ViewBag.custId" ><span class="text-center">Tarik Saldo</span></a>
+        </div>
+        <div class="menu-container">
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#menuTransaksi").click(function(event){
+        let id = $(this).data("id");
+    $(".menu-container").load("/PenarikanSaldo/TarikSaldo/" + id )
+    })
+</script>

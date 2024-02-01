@@ -1,0 +1,120 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model VMPenarikanSaldo?
+@{
+    Layout = null;
+}
+<form id="frmTarikSaldo">
+    <div class="d-flex gap-3" >
+    <div class="card col-5">
+        <div class="card-header border-0 ms-0" style="background-color:white">
+            Saldo saat ini adalah Rp.@string.Format("{0:N0}",ViewBag.CustById.Saldo),00
+        </div>
+        <input type="hidden" name="Transaksi" id="nominalTransaksi" value=""/>
+        <input type="hidden" name="CustId" id="custId" value="@Model.CustId"/>
+        <div class="row d-flex mb-2">
+            @foreach(VMPenarikanSaldo defNom in ViewBag.DefNom)
+            {
+                @if (ViewBag.CustById.Saldo >= defNom.DefaultNominal)
+                {
+                    <div class="col-3 mb-2">
+                            <button type="button" data-id ="@defNom.NomDefId" id="defNom-@defNom.NomDefId" class="btn btn-primary submitDef" style="font-size:12px" value="@defNom.DefaultNominal">@defNom.DefaultNominal</button>
+                    </div>
+                }
+            }
+            <div class="col-4">
+                <button type="button" id="nominalLain" class="btn btn-primary " data-bs-toggle ="modal" data-bs-target="#staticModal" style="font-size:9px">Nominal Lain</button>
+            </div>
+        </div>
+        <div class="row d-flex" style="margin-bottom: 50%">
+            @foreach (VMPenarikanSaldo custNom in ViewBag.CustNom)
+            {
+                @if (ViewBag.CustById.Saldo >= custNom.NominalCustom)
+                {
+                    <div class="col-3 mb-2">
+                                <button type="button" data-id="@custNom.NomCustId" id="custNom-@custNom.NomCustId" class="btn btn-primary submitCust" style="font-size:12px" value="@custNom.NominalCustom">@custNom.NominalCustom</button>
+                    </div>
+                }
+            }
+        </div>
+        <div class="card-footer border-0" style=" background-color:white"></div>
+    </div>
+
+    <div class="card col-5"> 
+        <div  class="card-body border-0" id="txtConfirm" data-bs-toggle="modal" data-bs-target="#staticModal" >
+
+        </div>
+        <div class="card-footer d-flex justify-content-md-end border-0" style="background-color:white">
+            <button type="button" class="btn btn-warning text-center" style="font-size:10px;color:white">Cancel</button>
+            <button type="button" id="lastConfirm" class="btn btn-primary text-center ms-3" style="font-size:10px" disabled>Ok</button>
+        </div>
+    </div>
+    </div>
+</form>
+
+<script>
+    $("#txtConfirm").click(function(event){
+        let nominalTrans = $("#nominalTransaksi").val()
+        
+        $("#staticModalBody").load("/PenarikanSaldo/InputPin?saldo="+ @ViewBag.CustById.Saldo + "&transaksi="+ nominalTrans + "&id=" + @Model.CustId)
+    })
+    $("#nominalLain").click(function(event){
+        $("#staticModalBody").load("/PenarikanSaldo/NominalLain?saldo="+ @ViewBag.CustById.Saldo);
+    })    
+
+    $(".submitDef").click(function(event){
+    let defId = $(this).data("id")
+        debugger;
+       
+        let inputTransaksi = $("#defNom-"+defId).val()
+        $("#nominalTransaksi").val(inputTransaksi)
+        $("#txtConfirm").html('<div><p>Anda akan melakukan penarikan sebesar Rp. ' +inputTransaksi+ ',00 </p><button type="button" class="w-100 btn btn-primary" style="font-size:10px" >Lanjutkan</button></div>')
+    })
+
+    $(".submitCust").click(function(event){
+    let custId = $(this).data("id")
+        debugger;
+
+        let inputTransaksi = $("#custNom-"+custId).val()
+        $("#nominalTransaksi").val(inputTransaksi)
+        $("#txtConfirm").html('<div><p>Anda akan melakukan penarikan sebesar Rp. ' +inputTransaksi+ ',00 </p><button type="button" class="w-100 btn btn-primary" style="font-size:10px">Lanjutkan</button></div>')
+    })
+
+    $("#lastConfirm").click(function(event){
+        event.preventDefault();
+        debugger;
+        $.ajax({
+            url: '/PenarikanSaldo/Edit',
+            type: 'post',
+            data: $("#frmTarikSaldo").serialize(),
+            dataType: 'json',
+            beforeSend: function(){
+                //process before send data
+            },
+            success: function(response){
+                debugger;
+                if (response.statusCode == 200 || response.statusCode == 201){
+                    console.log(response);
+                    $("#staticModal .btn-close").css("display","none")
+                    $("#staticModal").modal("show")
+
+
+                    $("#staticModalBody").load("/PenarikanSaldo/Otp?otp=" + response.data.otp)
+                }
+                else {
+                    debugger;
+                    $("#errorContainer ul").html("<li>" + response.message + "</li>");
+                    $("#errorContainer").show();
+
+                    //alert(response.message);
+                }
+            },
+            error: function(errResponse){
+                console.log("Gagal error")
+                debugger;
+            }
+        });
+    })
+    
+</script>

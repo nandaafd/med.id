@@ -1,0 +1,120 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model Pagination<VMMCourier>
+
+@{
+}
+
+<div class="card">
+    <div class="card-header h3" style="background-color: lightblue; color: navy; padding: 10px;">Courier Index</div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-3">
+           
+            <form class="w-50" id="frmFilter" asp-controller="Courier" asp-action="Index">
+                <div class="input-group">
+                    <input id="filter" name="filter" type="text" class="form-control" placeholder="Category Name or Description" aria-label="Filter" aria-describedby="iSearch" value="@ViewBag.Filter">
+                    <button type="submit" class="btn btn-secondary input-group-text" id="iSearch"><i class="fa-solid fa-search"></i></button>
+                </div>
+            </form>
+            <button class="btn btn-primary" title="Add" data-bs-toggle="modal" data-bs-target="#staticModal">Tambah</button>
+        </div>
+        <div class="card-header h3" style="background-color: lightblue; color: navy; padding: 5px;">nama</div>
+        <div class="card-body">
+            <div>
+                <div>
+                    <table class="w-100">
+                        <thead>
+                            <tr>
+                                
+                                <th>NAME</th>
+                                <th class="text-center">ACTION</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null)
+                            {
+                                @foreach (VMMCourier data in Model)
+                                {
+                                    <tr>
+                                        
+                                        <td>@data.Name</td>
+                                        <td class="col-2 text-center">
+                                            <div class="btn-group">
+
+                                                <button class="btn btn-warning" title="Edit" data-id="@data.Id" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fa-solid fa-pen-to-square"></i></button>
+                                                <button class="btn btn-danger" title="Delete" data-id="@data.Id" data-name="@data.Name" data-bs-toggle="modal" data-bs-target="#staticModal"><i class="fa-solid fa-trash-can"></i></button>
+
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center">tidak ada data</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-center">
+            <div class="input-group w-25">
+                <a class="btn btn-secondary col-2 @(Model.PageIndex <= 1 ? "disabled": "")" title="Previous Page"
+                   asp-controller="Courier" asp-action="Index" asp-route-filter="@ViewBag.Filter"
+                   asp-route-currPageSize="@ViewBag.PageSize"
+                   asp-route-pageNumber="@(Model.PageIndex <= 1 ? Model.PageIndex : Model.PageIndex-1)"
+                   asp-route-orderBy="@ViewBag.OrderBy"><i class="fas fa-chevron-left"></i></a>
+                <div class="input-group-text text-center col-6"><span class="w-100">@Model.PageIndex of @Model.TotalPages</span></div>
+                <a class="btn btn-secondary col-2 @(Model.PageIndex >= Model.TotalPages ? "disabled": "")" title="Next Page"
+                   asp-controller="Courier" asp-action="Index" asp-filter="@ViewBag.Filter"
+                   asp-route-currPageSize="@ViewBag.PageSize"
+                   asp-route-pageNumber="@(Model.PageIndex >= Model.TotalPages ? Model.PageIndex : Model.PageIndex+1)"
+                   asp-route-orderBy="@ViewBag.OrderBy"><i class="fas fa-chevron-right"></i></a>
+            </div>
+            <div class="input-group w-25">
+                <label class="input-group-text" for="currPageSize">Page Size:</label>
+                <select class="form-select" id="currPageSize">
+                    @for (int i = 5; i <= 15; i += 5)
+                    {
+                        if (ViewBag.PageSize == i)
+                        {
+                            <option value="@i" selected>@i</option>
+                        }
+                        else
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    </div>
+<script>
+    $("#currPageSize").change(function (event) {
+        location.replace("/Courier/Index?filter=@ViewBag.Filter&orderBy=@ViewBag.OrderBy&currPageSize=" + $(this).val())
+    });
+    $(".btn-primary").click(function (event) {
+        $("#staticModalBody").load("/Courier/Add");
+    });
+
+    
+
+    $(".btn-warning").click(function (event) {
+        let catId = $(this).data("id");
+        $("#staticModalBody").load("/Courier/Edit/" + catId);
+    });
+
+    $(".btn-danger").click(function (event) {
+        let catId = $(this).data("id");
+        $("#staticModalBody").load("/Courier/Delete/" + catId);
+    });
+</script>

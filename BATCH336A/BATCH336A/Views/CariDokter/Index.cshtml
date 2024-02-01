@@ -1,0 +1,147 @@
+﻿@using System.Globalization;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model Pagination<VMCariDokter>?
+
+@{
+    int hitung = 0;
+    string hari = DateTime.Now.ToString("dddd", new CultureInfo("id-ID"));
+    TimeSpan start = TimeSpan.Parse(DateTime.Now.ToString("HH:mm:ss"));
+    TimeSpan end = TimeSpan.Parse(DateTime.Now.ToString("HH:mm"));
+
+}
+
+
+<partial name="Partial/_ModalSpec" />
+<partial name="Partial/_ModalLogin" />
+
+
+<div class="card">
+    <div class="card-header h3 d-flex justify-content-between">
+        @ViewBag.Title
+        <button class="btn btn-info" title="Search" data-bs-toggle="modal" data-bs-target="#staticModal">ulang filter</button>
+    </div>
+    <div class="card-body">
+        <div>
+            Hasil Pencarian berdasarkan kata kunci 
+            @if (ViewBag.Location != null) { @Html.Raw($"Lokasi= {ViewBag.Location} | ")} 
+            @if (ViewBag.Name != null) { @Html.Raw($"Nama Dokter= {ViewBag.Name} | ")} 
+            @if (ViewBag.Treatment != null) { @Html.Raw($"Tindakan Medis= {ViewBag.Treatment} | ")} 
+            @if (ViewBag.Specialization != null)
+            {
+                @Html.Raw($"Spesialisasi= {ViewBag.Specialization}")
+            }
+        </div>
+        <div class="d-flex flex-row flex-wrap gap-4 justify-content-center align-items-stretch">
+            @if(Model != null && Model.Count != 0)
+            {
+                foreach (VMCariDokter data in Model)
+                {
+                    if (data.Locations.Where(a => a.endDate >= DateTime.Now || a.endDate == null).Any())
+                    {
+                        if (data.Locations.Count != 0 && data.Locations.Any(l => l.namaTreatment.Any(t => t.treatment.Contains(ViewBag.Treatment ?? ""))))
+                        {
+                            <div class="card col-5 border border-primary">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-9">
+                                            <div class="card-title h5">@data.doctorName</div>
+                                            <div style="font-size:13px">
+                                                <div class="card-subtitle">@data.specialization</div>
+                                                <div class="card-subtitle">Pengalaman @data.pengalaman Tahun</div>
+                                            
+                                            </div>
+                                            @foreach(VMLokasiCariDokter loc in data.Locations)
+                                            {
+                                                if (loc.namaTreatment.Count != 0 && (loc.endDate > DateTime.Now || loc.endDate == null))
+                                                {
+                                                    <div class="card-text" style="font-size:14px"><i class="fa-solid fa-stethoscope"></i> @loc.namaRumahSakit (@loc.namaLokasi)</div>
+                                                }
+
+                                                foreach(VMMMedicalFacilitySchedule s in loc.jamOperasional)
+                                                {
+                                                    if (s.Day == hari && start >= TimeSpan.Parse(s.TimeScheduleStart + ":00") && end <= TimeSpan.Parse(s.TimeScheduleEnd))
+                                                    {
+                                                        hitung++;
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="row">
+                                                <img class="w-100" src="~/images/profile picture/@data.ImagePath" />
+                                                @if (hitung > 0)
+                                                {
+                                                    <button class="btn btn-outline-success btn-sm mt-2">chat</button>
+                                                    hitung = 0;
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-secondary text-center btn-sm mt-2">offline</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center justify-text-center d-flex text-center mt-3">
+                                        <div class="col-7">
+                                            <button class="btn btn-outline-primary btnProfil" id="profil-@data.id" data-id="@data.id">Lihat profil lengkap</button>
+                                        </div>
+                                        <div class="col-5">
+                                            <button class="btn btn-primary" title="tambahJanji" data-id="@data.id" data-bs-toggle="modal"
+                                                    data-bs-target=@((Context.Session.GetInt32("userId") != null) ? "#staticModal" : "#modalLogin")>
+                                                buat janji
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="p-3">Dokter tidak ditemukan</div>
+                    }
+                }
+            }
+            else
+            {
+                <div class="p-3">Dokter tidak ditemukan</div>
+            }
+        </div>
+    </div>
+    <div class="card-footer d-flex justify-content-center">
+        <div class="input-group w-25">
+            <a class="btn btn-secondary col-2 @(Model.PageIndex <= 1 ? "disabled": "")" title="Previous Page"
+               asp-controller="CariDokter" asp-action="Index" asp-route-filter="@ViewBag.Filter"
+               asp-route-currPageSize="@ViewBag.PageSize"
+               asp-route-pageNumber="@(Model.PageIndex <= 1 ? Model.PageIndex : Model.PageIndex-1)">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <div class="input-group-text text-center col-6"><span class="w-100">@Model.PageIndex of @Model.TotalPages</span></div>
+            <a class="btn btn-secondary col-2 @(Model.PageIndex >= Model.TotalPages ? "disabled": "")" title="Next Page"
+               asp-controller="CariDokter" asp-action="Index" asp-filter="@ViewBag.Filter"
+               asp-route-currPageSize="@ViewBag.PageSize"
+               asp-route-pageNumber="@(Model.PageIndex >= Model.TotalPages ? Model.PageIndex : Model.PageIndex+1)"><i class="fas fa-chevron-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(".btn-info").click(function (event) {
+        $("#staticModalBody").load("/CariDokter/Search");
+    });
+
+    $(".btn-primary").click(function (event) {
+        let docId = $(this).data("id");
+        $("#staticModalBody").load("/BuatJanji/Add/" + docId);
+    });
+
+    
+    $(".btnProfil").click(function (event) {
+        debugger;
+        let docId = $(this).data("id");
+        location.replace("/BuatJanji/Index/" + docId);
+    });
+
+</script>

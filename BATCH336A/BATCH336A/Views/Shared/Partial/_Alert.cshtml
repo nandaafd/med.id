@@ -1,0 +1,44 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    //Get Alert Message from session
+    ViewBag.InfoMsg = Context.Session.GetString("infoMsg") ?? "";
+    ViewBag.WarnMsg = Context.Session.GetString("warnMsg") ?? "";
+    ViewBag.ErrMsg = Context.Session.GetString("errMsg") ?? "";
+
+    //Reset Alert Message from Session
+    Context.Session.SetString("infoMsg", string.Empty);
+    Context.Session.SetString("warnMsg", string.Empty);
+    Context.Session.SetString("errMsg", string.Empty);
+
+}
+<div id="alertPlaceholder"></div>
+
+
+<script>
+    function alert(message, bscolor) {
+        $("#alertPlaceholder").append(`<div class="alert alert-${bscolor} alert-dismissible fade show mt-1" role="alert">
+                                                        <i class="fas fa-circle-info text-${bscolor}"></i>
+                                                        <span> ${message}</span>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                </div>`);
+    };
+    function alert(message, bscolor, id) {
+        $(`${id} .alert`).remove();
+        $(`${id}`).append(`<div class="alert alert-${bscolor} alert-dismissible fade show mt-1" id="alertAuth" role="alert">
+                                                            <i class="fas fa-circle-info text-${bscolor}"></i>
+                                                            <span> ${message}</span>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    </div>`);
+        setTimeout(function () {
+            $(`${id} .alert`).alert('close');
+        }, 3000);
+    };
+    $(document).ready(function () {
+        if ("@ViewBag.InfoMsg" != "") alert("@Html.Raw(ViewBag.InfoMsg)", "info");
+        if ("@ViewBag.WarnMsg" != "") alert("@Html.Raw(ViewBag.WarnMsg)", "warning");
+        if ("@ViewBag.ErrMsg" != "") alert("@Html.Raw(ViewBag.ErrMsg)", "danger");
+
+    })
+</script>

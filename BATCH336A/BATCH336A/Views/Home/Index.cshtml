@@ -1,0 +1,80 @@
+﻿@model List<VMMMenu>
+@{
+    ViewData["Title"] = "Home Page";
+    int? roleId = Context.Session.GetInt32("userRoleId");
+    if(roleId == null)
+    {
+        roleId = null;
+    }
+}
+@if (ViewBag.ErrMsg != null && !string.IsNullOrWhiteSpace(ViewBag.ErrMsg.ToString()))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @ViewBag.ErrMsg
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+    </div>
+}
+else if (ViewBag.InfoMsg != null && !string.IsNullOrWhiteSpace(ViewBag.InfoMsg.ToString()))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @ViewBag.InfoMsg
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+    </div>
+}
+
+@if (Context.Session.GetInt32("userId") != null || Context.Session.GetInt32("userId") != 0)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        User id : @Context.Session.GetInt32("userId") - Nama : @Context.Session.GetString("userFullname") - biodata id : @Context.Session.GetInt32("userBiodataId")
+        Role id : @Context.Session.GetInt32("userRoleId")
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
+    </div>
+}
+
+<div id="placeholderHome"></div>
+
+<section id="hero" class="mx-auto mt-4">
+    <div class="row">
+        <div class="col-md-8" id="tagline">
+            <h1 class="text mt-4">
+                Tak perlu  <span class="fw-bold"> cemas</span>,
+                Kini anda dapat berkonsultasi dengan <span class="fw-bold"> Dokter</span> jadi lebih mudah
+            </h1>
+            <p class="text">
+                Kini anda tak perlu datang ke rumah sakit untuk berkonsultasi dengan dokter, karena kami
+                memberikan layanan berupa konsultasi online yang sangat memudahkan anda.
+            </p>
+            <a href="" class="btn btn-primary" id="btn-daftar-hero">Buat Janji</a>
+        </div>
+        <div class="col-md-3 d-flex justify-content-center">
+            <img src="~/images/assets/doctor.png" id="imgHero" class="img-fluid position-absolute mt-5 end-0" />
+        </div>
+    </div>
+</section>
+<section id="menu-area" class="mx-auto my-4">
+    <div class="row text-center mx-auto py-4 menu">
+        @if(Model != null)
+        {
+            foreach (VMMMenu menu in Model)
+            {
+                if(menu.ParentId != null && menu.ParentId != 0)
+                {
+                    if (menu.Roles.Any(r => r.RoleId == roleId) || menu.Roles.Any(r => r.RoleId == 5) || menu.Roles.Any(r => r.RoleId == 0))
+                    {
+                        if (menu.BigIcon != null)
+                        {
+                            <div class="col mb-3">
+                                <div class="menu-box mx-auto py-1">
+                                    <a href="@menu.Url" class="text-center mx-auto">
+                                        <img src="~/images/assets/@menu.BigIcon" alt="" class="ikon-daftar img-fluid">
+                                        <p>@menu.Name</p>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            }
+        }
+    </div>
+</section>

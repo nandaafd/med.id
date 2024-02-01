@@ -1,0 +1,248 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model Pagination<VMMHistoryCustomer>
+@{
+    Layout = "_LayoutSharedProfile";
+}
+@if (Context.Session.GetInt32("userId") != null || Context.Session.GetInt32("userId") != 0)
+{
+    <div class="h2 text-primary mb-3">Riwayat Kedatangan Pasien</div>
+    <div class="container-fluid h-100" style="border:solid 2px #6976FF; border-radius:5px;">
+        <div class="row mt-3">
+            <div class="col-6">
+                <form asp-controller="HistoryAppointmentCustomer" asp-action="History" asp-route-filter="@ViewBag.Filter" asp-route-orderby="@ViewBag.OrderBy" asp-route-currpagesize="@ViewBag.PageSize" asp-route-sortby="@ViewBag.SortBy" asp-route-pagenumber="@Model.PageIndex">
+                    <div class="input-group mb-3">
+                        <input type="text" name="filter" value="@ViewBag.Filter" class="form-control" placeholder="cari nama pasien atau nama dokter" aria-label="Recipient's username" aria-describedby="button-addon2">
+                        <button class="btn btn-outline-primary" type="submit" id="button-addon2"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col d-flex justify-content-end">
+                        <label class="mt-1 ms-2">urutkan</label>
+                    </div>
+                    <div class="col">
+                        <select class="form-select" id="sortDropdown" aria-label="Default select example">
+                            @if (ViewBag.OrderBy != "")
+                            {
+                                if (ViewBag.OrderBy == "kedatangan")
+                                {
+                                    <option value="">-urutkan-</option>
+                                    <option value="kedatangan" selected>Tanggal Kedatangan</option>
+                                    <option value="nama">Nama Pasien</option>
+                                    <option value="createon">Tanggal dibuat</option>
+                                }
+                                else if (ViewBag.OrderBy == "nama")
+                                {
+                                    <option value="">-urutkan-</option>
+                                    <option value="kedatangan">Tanggal Kedatangan</option>
+                                    <option value="nama" selected>Nama Pasien</option>
+                                    <option value="createon">Tanggal dibuat</option>
+                                }
+                                else if (ViewBag.OrderBy == "createon")
+                                {
+                                    <option value="">-urutkan-</option>
+                                    <option value="kedatangan">Tanggal Kedatangan</option>
+                                    <option value="nama">Nama Pasien</option>
+                                    <option value="createon" selected>Tanggal dibuat</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="">-urutkan-</option>
+                                <option value="kedatangan">Tanggal Kedatangan</option>
+                                <option value="nama">Nama Pasien</option>
+                                <option value="createon">Tanggal dibuat</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-end my-2">
+            <button class="btn bg-transparent btnAZ">A-Z</button>
+            <button class="btn bg-transparent btnZA d-none">Z-A</button>
+            <a>|</a>
+            <select id="currPageSize" class="btn">
+                @for (int i = 5; i <= 20; i += 5)
+                {
+                    if (ViewBag.PageSize == i)
+                    {
+                        <option value="@i" selected>@i</option>
+                    }
+                    else
+                    {
+                        <option value="@i">@i</option>
+                    }
+                }
+            </select>
+        </div>
+        <div>
+            <div>
+                @if (Model != null)
+                {
+                    @foreach (VMMHistoryCustomer data in Model)
+                    {
+                        int i = 1;
+                        <div class="mb-2" style="border:solid 2px #6976FF; border-radius:5px;">
+                            <div class="ms-3 mt-2">
+                                <div class="row">
+                                    <div class="col"><h5>@data.AppointmentCustomerName</h5></div>
+                                    <div class="col d-flex justify-content-end">
+                                        <div class="dropdown me-2">
+                                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="btnDropdownHistory" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fa-solid fa-ellipsis"></i>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                <li><a class="dropdown-item" href="#">Beri Ulasan</a></li>
+                                                <li><a class="dropdown-item" href="#">Beri Penilaian</a></li>
+                                                <li><a class="dropdown-item" href="#">Cek Status</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div>
+                                        @data.AppointmentDate.Value.ToString("dd MMMM yyyy"), <span>@data.MedicalFacilityName</span><br />
+                                        <span>@data.DoctorName</span> - <span>@data.TreatmentName</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3" style="background-color:#DCDFFF">
+                                <buton id="btnDetails" data-id="@data.Id" class="btn btn-sm w-100" data-bs-toggle="collapse" data-bs-target="#detailHistory-@data.Id" onclick="toggleDetails(this)">Lihat detail kedatangan</buton>
+                            </div>
+                        </div>
+                        <div id="detailHistory-@data.Id" class="collapse mb-3" style="border:solid 2px #6976FF; border-radius:5px;">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="h5 ms-3">Diagnosa</div>
+                                    <p class="ms-3">@data.Diagnosis</p>
+                                </div>
+                                <div class="col">
+                                    @foreach (VMTPrescription resep in data.Prescriptions)
+                                    {
+                                        if (resep.MedicalItemId != null && resep.AppointmentId != null && i == 1)
+                                        {
+                                            <div class="h5">Resep Digital</div>
+                                            @if (DateTime.Now > (DateTime)data.AppointmentDate.Value.AddDays(2))
+                                            {
+                                                <div class="text-danger">resep digital sudah tidak berlaku sejak @data.AppointmentDate.Value.AddDays(2).ToString("dd MMMM yyyy")</div>
+                                            }
+                                            <div class="mb-3">
+                                                @if (data.Prescriptions != null)
+                                                {
+                                                    foreach (VMTPrescription item in data.Prescriptions)
+                                                    {
+                                                        <div class="ps-2 me-3" style="border:solid 1px #6976FF; background-color:#DCDFFF">
+                                                            <div class="fs-6 fw-bold">@item.MeidicalItemName</div>
+                                                            <div>
+                                                                @item.Dosage <br />
+                                                                @item.Directions <br />
+                                                                @item.Time<br />
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                                <div class="mt-1 me-3">
+                                                    <button class="btn btn-primary w-100 btnCetak @(resep.PrintAttempt == 2 || (data.AppointmentDate.Value.AddDays(2) < DateTime.Now ) ? "disabled":"")" data-id="@data.Id" id="btnCetak" data-bs-toggle="modal" data-bs-target="#modalConfirm"><i class="fa-solid fa-print"></i> Cetak PDF</button>
+                                                    <div id="errPlaceholder"></div>
+                                                    @* <button onclick="location.href='@Url.Action("GetPdf", "YourController", new { id = yourId })'">Cetak PDF</button> *@
+                                                    @* <a asp-controller="PrintPresciption" asp-action="GetPdf" asp-route-id="@data.Id" class="btn btn-sm btn-primary w-100"><i class="fa-solid fa-print"></i> Cetak PDF</a> *@
+                                                </div>
+                                            </div>
+                                        }
+                                        i++;
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="bg-warning w-100 mt-5 text-center">Anda Tidak Memiliki Riwayat Kedatangan</div>
+                }
+
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center mt-3">
+        <div class="input-group mb-3 w-50">
+            <a class="btn btn-secondary btn btnMinus @(Model.PageIndex <=1 ? "disabled":"")" asp-controller="HistoryAppointmentCustomer" asp-action="History" asp-route-filter="@ViewBag.Filter" asp-route-sortby="@ViewBag.SortBy" asp-route-pageNumber="@(Model.PageIndex <= 1 ? Model.PageIndex : Model.PageIndex - 1)" asp-route-orderBy="@ViewBag.OrderBy" asp-route-currpagesize="@ViewBag.PageSize" title="previous page" id="minus-btn"><i class="fa fa-backward"></i></a>
+            <div class="col-8 text-center input-group-text input-group-sm">
+                <span class="w-100">Page @Model.PageIndex of @Model.TotalPages</span>
+            </div>
+            <a class="btn btn-secondary btn btnPlus @(Model.PageIndex >= Model.TotalPages ? "disabled":"")" asp-controller="HistoryAppointmentCustomer" asp-action="History" asp-route-filter="@ViewBag.Filter" asp-route-sortby="@ViewBag.SortBy" asp-route-pageNumber="@(Model.PageIndex >= Model.TotalPages ? Model.PageIndex : Model.PageIndex + 1)" asp-route-orderBy="@ViewBag.OrderBy" asp-route-currpagesize="@ViewBag.PageSize" title="next page" id="plus-btn"><i class="fa fa-forward"></i></a>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" id="modalConfirm">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Apakah kamu yakin ingin mencetak resep?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>Resep digital hanya akan berlaku 2 x 24 jam setelah resep diberikan</div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Batal</button>
+                        <button class="btn btn-primary" id="btnConfirmCetak">Cetak</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+<script>
+    $(document).ready(function(){
+        if ("@ViewBag.ErrMsg" != "") {
+            alert("@ViewBag.ErrMsg", "danger", "#errPlaceholder");
+        }
+    })
+    function toggleDetails(summaryElement) {
+        // Mendapatkan elemen details terkait dengan elemen summary
+        var detailsElement = summaryElement.parentNode;
+
+        // Toggle atribut open pada elemen details
+        detailsElement.open = !detailsElement.open;
+
+        // Mengubah teks pada elemen summary
+        summaryElement.textContent = detailsElement.open ? 'Tutup detail kedatangan' : 'Lihat detail kedatangan';
+    }
+    $("#sortDropdown").change(function (e) {
+        location.replace("/HistoryAppointmentCustomer/History?filter=@ViewBag.Filter&currpageSize=@ViewBag.PageSize&sortBy=@ViewBag.SortBy&orderBy=" + $(this).val());
+    })
+    $("#currPageSize").change(function (e) {
+        let val = $(this).val()
+        location.replace("/HistoryAppointmentCustomer/History?filter=@ViewBag.Filter&orderBy=@ViewBag.OrderBy&sortBy=@ViewBag.SortBy&currpageSize="+$(this).val());
+    })
+    $(document).ready(function () {
+        if ("@ViewBag.SortBy" === "desc") {
+            $(".btnZA").removeClass("d-none")
+            $(".btnAZ").addClass("d-none")
+        }
+        if ("@ViewBag.SortBy" === "asc") {
+            $(".btnAZ").removeClass("d-none");
+            $(".btnZA").addClass("d-none");
+        }
+    })
+    $(".btnAZ").click(function (e) {
+        location.replace("/HistoryAppointmentCustomer/History?filter=@ViewBag.Filter&orderBy=@ViewBag.OrderBy&currpageSize=@ViewBag.PageSize&sortBy=desc");
+    })
+    $(".btnZA").click(function (e) {
+        location.replace("/HistoryAppointmentCustomer/History?filter=@ViewBag.Filter&orderBy=@ViewBag.OrderBy&currpageSize=@ViewBag.PageSize&sortBy=asc");
+    })
+    let id;
+    $(".btnCetak").click(function (e) {
+        id = $(this).data("id");
+    })
+    $("#btnConfirmCetak").click(function (e) {
+        location.replace("/PrintPresciption/GetPdf/" + id);
+    })
+
+</script>

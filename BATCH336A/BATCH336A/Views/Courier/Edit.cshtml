@@ -1,0 +1,83 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model VMMCourier?
+@{
+    Layout = null;
+}
+
+<form id="frmCourier" method="post" asp-action="Edit" asp-controller="Courier">
+    <div class="card">
+        <div class="card-body">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="ModifiedBy" value="2" />
+            <div class="input-group mb-3">
+                <label class="input-group-text col-3">Name</label>
+                <input name="Name" type="text" class="form-control" placeholder="Input Courier Name..." aria-label="CourierName" aria-describedby="basic-addon1" value="@Model.Name">
+            </div>
+      
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <input class="btn btn-primary" type="submit" value="Submit">
+        </div>
+    </div>
+</form>
+
+<script>
+    $("#staticModalLabel").html("@ViewBag.Title");
+    $.validator.addMethod("noSpacesOnly", function (value, element) {
+        return /\S/.test(value);
+    }, "Cannot be all spaces");
+
+    $("#frmCourier").validate({
+        errorClass: "text-danger",
+        errorLabelContainer: "#errorContainer",
+        wrapper: "li",
+        rules: {
+            Name: {
+                minlength: 2,
+                maxlength: 100,
+                required: true,
+                noSpacesOnly: true
+            }
+        },
+        messages: {
+            Name: {
+                required: "Masukan Nama Courier!",
+                minlength: "Minimum length is 2 characters",
+                maxlength: "Maximum length is 100 characters"
+            }
+        },
+        submitHandler: function () {
+            return false;
+        }
+    });
+
+    $("#frmCourier").submit(function (event) {
+        //Disable submit default
+        event.preventDefault();
+
+        if ($("#frmCourier").valid()) {
+            $.ajax({
+                url: '/Courier/Edit',
+                type: 'post',
+                data: $("#frmCourier").serialize(),
+                dataType: 'json',
+                beforeSend: function () {
+
+                },
+                success: function (response) {
+                    if (response.statusCode == 200 || response.statusCode == 201) {
+                        location.reload();
+                    }
+                    else {
+                        alert(response.message);
+                    }
+                },
+                error: function (errResponse) {
+                    debugger;
+                }
+            });
+        }
+    });
+</script>

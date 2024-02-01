@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BATCH336A</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BATCH336A.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
+    <link href="~/css/template.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="wrapper d-flex align-items-stretch">
+        <partial name="Partial/_Sidebar" />
+        <div class="p-4 p-md-5" id="content">
+            <partial name="Partial/_Alert">
+            <partial name="Partial/_Header" />
+            @RenderBody()
+        </div>
+    </div>
+    
+     <partial name="_Modal" />
+    <!-- Modal Rifqi-->
+    <partial name ="Partial/_ModalMedic"/>
+    <partial name="Partial/_ModalLogin" />
+    <partial name="Partial/_ModalPendaftaran" />
+     <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

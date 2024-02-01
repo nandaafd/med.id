@@ -1,0 +1,86 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = null;
+}
+
+<form id="frmCourier" asp-action="Add" asp-controller="Courier">
+    <div class="card">
+        <div class="card-body">
+            <div class="input-group mb-3">
+                <label class="input-group-text col-3">Nama<span class="text-danger">*</span></label>
+                <input required name="Name" type="text" class="form-control" placeholder="Input Courier Name..." aria-label="CourierName" aria-describedby="basic-addon1">
+               
+            </div>
+      
+            <div class="input-group mb-3">
+                <input name="CreatedBy" type="hidden" value="1" class="form-control" placeholder="Input Courier Description..." aria-label="Description" aria-describedby="basic-addon1">
+            </div>
+            <div> <ul id="errorContainer"></ul> </div>
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <input class="btn btn-primary" type="submit" value="Submit">
+        </div>
+    </div>
+</form>
+
+<script>
+    // Add a custom method to disallow strings consisting only of spaces
+    $.validator.addMethod("noSpacesOnly", function (value, element) {
+        return /\S/.test(value);
+    }, "Cannot be all spaces");
+
+
+
+    $("#frmCourier").validate({
+        errorClass: "text-danger",
+        errorLabelContainer: "#errorContainer",
+        wrapper: "li",
+        rules: {
+            Name: {
+                minlength: 2,
+                maxlength: 100,
+                required: true,
+                noSpacesOnly: true
+            }
+        },
+        messages: {
+            Name: {
+                required: "Masukan Nama Courier!",
+                minlength: "Minimum length is 2 characters",
+                maxlength: "Maximum length is 100 characters"
+            }
+        }
+    });
+
+    $("#frmCourier").submit(function (event) {
+        // Disable submit default
+        event.preventDefault();
+
+        if ($("#frmCourier").valid()) {
+
+            $.ajax({
+                url: '/Courier/Add',
+                type: 'post',
+                data: $("#frmCourier").serialize(),
+                dataType: 'json',
+                beforeSend: function () {
+                    // You can add any loading indicators or actions here
+                },
+                success: function (response) {
+                    debugger;
+                    if (response.statusCode == 200 || response.statusCode == 201) {
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function (errResponse) {
+                    debugger;
+                }
+            });
+        }
+    });
+
+   </script>

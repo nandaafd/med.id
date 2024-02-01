@@ -1,0 +1,383 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model VMCariDokter?
+@{
+    Layout = null;
+}
+
+<form id="frmBuatJanji" class="" asp-action="Add" asp-controller="BuatJanji">
+    <div class="card">
+        @if (Model != null)
+        {
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-3"><img class="w-100 rounded-circle" src="~/images/profile picture/@Model.ImagePath" /></div>
+                    <div class="col">
+                        <div class="row text-primary h4">@Model.doctorName</div>
+                        <div class="row">@Model.specialization</div>
+                        <div class="row">Pengalaman @Model.pengalaman Tahun</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div>Konsultasi untuk <span class="text-warning">*</span></div>
+                <select class="form-select" name="CustomerId" id="customerid" required>
+                    <option value=""></option>
+                    @foreach (VMMCustomerMember data in ViewBag.Customer.Members)
+                    {
+                        <option value="@data.CustomerId">@data.CustomerName, @data.CustomerRelationName</option>
+                    }
+                </select>
+                <div>Faskes<span class="text-warning">*</span></div>
+                <select class="form-select" name="DoctorOfficeId" id="doctorOfficeId" required>
+                    @if(ViewBag.FaskesId != null)
+                    {
+                        <option value="@ViewBag.FaskesId">@Model.Locations.Where(a => a.doctorOfficeId == ViewBag.FaskesId).Select(a => a.namaRumahSakit).FirstOrDefault()</option>
+                    }
+                    else
+                    {
+                        <option value=""></option>
+                        @foreach (VMLokasiCariDokter loc in Model.Locations)
+                        {
+                            if(loc.endDate == null || loc.endDate >= DateTime.Now)
+                            {
+                                <option value="@loc.doctorOfficeId">@loc.namaRumahSakit</option>
+                            }
+                        }
+                    }
+                </select>
+                <div>
+                    <label>Tanggal </label>
+                    <input type="date" class="form-control" name="AppointmentDate" id="appointmentDate" value="" min="@DateTime.Now.ToString("yyyy-MM-dd")" required disabled>
+                </div>
+                <div>Jam Kedatangan<span class="text-warning">*</span></div>
+                <select class="form-select" name="DoctorOfficeScheduleId" id="doctorOfficeScheduleId" required disabled>
+                    <option value=""></option>
+                </select>
+                <div>Tindakan Medis</div>
+                <select class="form-select" name="DoctorOfficeTreatmentId" id="doctorOfficeTreatmentId" disabled>
+                    <option value=""></option>
+                </select>
+                <div id="warning" class="d-none text-warning">Janji sudah pernah dibuat</div>
+            </div>
+        }
+        <div class="card-footer d-flex justify-content-end">
+            <input id="btnBuatJanji" class="btn btn-primary" type="submit" value="Buat Janji">
+            <button class="btn btn-secondary ms-2" type="button" data-bs-dismiss="modal">cancel</button>
+        </div>
+    </div>
+</form>
+
+<div class="d-none" id="tunggu">
+    <div class="card">
+        <div class="card-body">
+            <div class="text-primary h4">Mengecek ketersediaan jadwal</div>
+            <div>Mohon menunggu kami sedang mengecek ketersediaan waktu konsultasi</div>
+            <div class="spinner-border" role="status"></div>
+        </div>
+    </div>
+</div>
+
+<div class="d-none" id="sukses">
+    <div class="card">
+        <div class="card-body">
+            <div class="text-primary h4">Janji Berhasil Dibuat</div>
+            <div>Rencana kedatangan anda sudah tersimpan. Anda dapat mengubah atau membatalkan janji di Rencana Kedatangan</div>
+        </div>
+    </div>
+</div>
+
+<div class="d-none" id="gagal">
+    <div class="card">
+        <div class="card-body">
+            <div class="text-primary h4">Mengecek ketersediaan jadwal</div>
+            <div class="mb-3">Mohon maaf waktu kedatangan yang anda pilih sudah terisi penuh. Silahkan pilih waktu kedatangan atau faskes lain</div>
+            <div class="card-footer d-flex justify-content-end">
+                <input id="btnUbahJadwal" class="btn btn-primary" type="submit" value="Ubah Jadwal">
+                <button class="btn btn-secondary ms-2" type="button" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#staticModalLabel").html("@ViewBag.Title");
+
+    $("#doctorOfficeId").change(function (event) {
+        let offId = $(this).val();
+
+        $("#appointmentDate").val("");
+        $("#appointmentDate").removeAttr("disabled");
+
+        $("#appointmentDate").change(function (event) {
+            debugger;
+            var week = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+            let date = new Date($(this).val());
+            let day = week[date.getDay()];
+            let count = 0;
+
+            $.ajax({
+                url: '/BuatJanji/GetJadwal',
+                data: { offId: offId, appDate: $("#appointmentDate").val() },
+                dataType: 'json',
+                success: function (response) {
+                    debugger;
+                    if (response.length > 0) {
+                        $("#doctorOfficeScheduleId").empty();
+
+                        $("#doctorOfficeScheduleId").removeAttr("disabled");
+                        $.each(
+                            response,
+                            function (idx, data) {
+                                if (data.day == day) {
+                                    $("#doctorOfficeScheduleId").append(`<option value="${data.doctorOfficeScheduleId}">${data.day}, ${data.timeScheduleStart} - ${data.timeScheduleEnd}</option>`)
+                                    count++;
+                                }
+                            }
+                        );
+                        if (count == 0) {
+                            $("#doctorOfficeScheduleId").empty();
+                            $("#doctorOfficeScheduleId").append(`<option value="">Tidak ada jam praktek</option>`)
+                        }
+                    }
+                    else {
+                        $("#doctorOfficeScheduleId").empty();
+                        $("#doctorOfficeScheduleId").removeAttr("disabled");
+                        $("#doctorOfficeScheduleId").append(`<option value="">Tidak ada jam praktek / Slot habis</option>`)
+                    }
+                },
+                error: function (errorResponse) {
+                    debugger;
+                }
+            });
+        });
+
+        $.ajax({
+            url: '/BuatJanji/GetTreatment',
+            data: { offId: offId },
+            dataType: 'json',
+            success: function (response) {
+                debugger;
+                if (response.length > 0) {
+                    $("#doctorOfficeTreatmentId").removeAttr("disabled");
+                    $("#doctorOfficeTreatmentId").empty();
+                    $("#doctorOfficeTreatmentId").append(`<option value=""></option>`)
+                    $.each(
+                        response,
+                        function (idx, data) {
+                            $("#doctorOfficeTreatmentId").append(`<option value="${data.doctorOfficeTreatmentId}">${data.treatment}</option>`)
+                        }
+                    );
+                }
+                else {
+                    alert("Treatment with doctor office ID = " + offId + "could not be found")
+                }
+            },
+            error: function (errorResponse) {
+                debugger;
+            }
+        });
+    });
+
+    $("#frmBuatJanji").submit(function (event) {
+        event.preventDefault();
+
+        if ($("#frmBuatJanji").valid()) {
+
+            $.ajax({
+                url: '/BuatJanji/Add',
+                type: 'post',
+                data: $("#frmBuatJanji").serialize(),
+                dataType: 'json',
+                beforeSend: function () {
+                    $("#frmBuatJanji").addClass("d-none");
+                    $("#tunggu").removeClass("d-none");
+                },
+                success: function (response) {
+                    debugger;
+                    if (response.statusCode == 200 || response.statusCode == 201) {
+                        $("#tunggu").addClass("d-none");
+                        $("#sukses").removeClass("d-none");
+                    }
+                    else if (response.statusCode == 300){
+                        debugger;
+                        $("#tunggu").addClass("d-none");
+                        $("#frmBuatJanji").removeClass("d-none");
+                        $("#warning").removeClass("d-none");
+                    }
+                    else {
+                        debugger;
+                        $("#tunggu").addClass("d-none");
+                        $("#gagal").removeClass("d-none");
+                    }
+                },
+                error: function (errResponse) {
+                    debugger;
+                }
+            });
+        }
+    });
+
+    $("#btnUbahJadwal").click(function (event) {
+        $("#doctorOfficeId").val("");
+        $("#appointmentDate").val("");
+        $("#doctorOfficeTreatmentId").empty();
+        $("#doctorOfficeScheduleId").empty();
+        $("#gagal").addClass("d-none");
+        $("#frmBuatJanji").removeClass("d-none");
+    });
+
+    if ($("#doctorOfficeId").val() != "") {
+        debugger;
+
+        let offId = $("#doctorOfficeId").val();
+
+        debugger;
+        $("#appointmentDate").removeAttr("disabled");
+
+
+        $("#appointmentDate").change(function (event) {
+            debugger;
+            var week = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+            let date = new Date($(this).val());
+            let day = week[date.getDay()];
+            let count = 0;
+
+            $.ajax({
+                url: '/BuatJanji/GetJadwal',
+                data: { offId: offId, appDate: $("#appointmentDate").val() },
+                dataType: 'json',
+                success: function (response) {
+                    debugger;
+                    if (response.length > 0) {
+                        $("#doctorOfficeScheduleId").empty();
+
+                        $("#doctorOfficeScheduleId").removeAttr("disabled");
+                        $.each(
+                            response,
+                            function (idx, data) {
+                                if (data.day == day) {
+                                    $("#doctorOfficeScheduleId").append(`<option value="${data.doctorOfficeScheduleId}">${data.day}, ${data.timeScheduleStart} - ${data.timeScheduleEnd}</option>`)
+                                    count++;
+                                }
+                            }
+                        );
+                        if (count == 0) {
+                            $("#doctorOfficeScheduleId").empty();
+                            $("#doctorOfficeScheduleId").append(`<option value="">Tidak ada jam praktek</option>`)
+                        }
+                    }
+                    else {
+                        $("#doctorOfficeScheduleId").empty();
+                        $("#doctorOfficeScheduleId").removeAttr("disabled");
+                        $("#doctorOfficeScheduleId").append(`<option value="">Tidak ada jam praktek / Slot habis</option>`)
+                    }
+                },
+                error: function (errorResponse) {
+                    debugger;
+                }
+            });
+        });
+
+        $.ajax({
+            url: '/BuatJanji/GetTreatment',
+            data: { offId: offId },
+            dataType: 'json',
+            success: function (response) {
+                debugger;
+                if (response.length > 0) {
+                    $("#doctorOfficeTreatmentId").removeAttr("disabled");
+                    $("#doctorOfficeTreatmentId").empty();
+                    $("#doctorOfficeTreatmentId").append(`<option value=""></option>`)
+                    $.each(
+                        response,
+                        function (idx, data) {
+                            $("#doctorOfficeTreatmentId").append(`<option value="${data.doctorOfficeTreatmentId}">${data.treatment}</option>`)
+                        }
+                    );
+                }
+                else {
+                    alert("Treatment with doctor office ID = " + offId + "could not be found")
+                }
+            },
+            error: function (errorResponse) {
+                debugger;
+            }
+        });
+    }
+
+    // $("#doctorOfficeId").change(function (event) {
+    //     let offId = $(this).val();
+    //     $("#appointmentDate").val("");
+
+    //     $("#appointmentDate").removeAttr("disabled");
+
+    //     $.ajax({
+    //         url: '/BuatJanji/GetJadwal',
+    //         data: { offId: offId },
+    //         dataType: 'json',
+    //         success: function (response) {
+    //             debugger;
+    //             console.log(response)
+    //             if (response.length > 0) {
+    //                 $("#doctorOfficeScheduleId").empty();
+
+    //                 $("#appointmentDate").change(function (event) {
+
+    //                     $("#doctorOfficeScheduleId").empty();
+    //                     var week = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+    //                     let date = new Date($(this).val());
+    //                     let day = week[date.getDay()];
+    //                     let count = 0;
+    //                     $("#doctorOfficeScheduleId").removeAttr("disabled");
+    //                     $.each(
+    //                         response,
+    //                         function (idx, data) {
+    //                             if (data.day == day) {
+    //                                 $("#doctorOfficeScheduleId").append(`<option value="${data.doctorOfficeScheduleId}">${data.day}, ${data.timeScheduleStart} - ${data.timeScheduleEnd}</option>`)
+    //                                 count++;
+    //                             }
+    //                         }
+    //                     );
+    //                     if (count == 0) {
+    //                         $("#doctorOfficeScheduleId").append(`<option value="">Tidak ada jam praktek</option>`)
+    //                     }
+    //                 });
+    //             }
+    //             else {
+    //                 alert("Jadwal with doctor office ID = " + offId + "could not be found")
+    //             }
+    //         },
+    //         error: function (errorResponse) {
+    //             debugger;
+    //         }
+    //     });
+
+    //     $.ajax({
+    //         url: '/BuatJanji/GetTreatment',
+    //         data: { offId: offId },
+    //         dataType: 'json',
+    //         success: function (response) {
+    //             debugger;
+    //             if (response.length > 0) {
+    //                 $("#doctorOfficeTreatmentId").removeAttr("disabled");
+    //                 $("#doctorOfficeTreatmentId").empty();
+    //                 $.each(
+    //                     response,
+    //                     function (idx, data) {
+    //                         $("#doctorOfficeTreatmentId").append(`<option value="${data.doctorOfficeTreatmentId}">${data.treatment}</option>`)
+    //                     }
+    //                 );
+    //             }
+    //             else {
+    //                 alert("Treatment with doctor office ID = " + offId + "could not be found")
+    //             }
+    //         },
+    //         error: function (errorResponse) {
+    //             debugger;
+    //         }
+    //     });
+    // });
+
+</script>

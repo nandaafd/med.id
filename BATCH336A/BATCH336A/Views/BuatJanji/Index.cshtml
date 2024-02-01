@@ -1,0 +1,37 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model VMCariDokter?
+@{
+}
+
+<partial name="Partial/_ModalSpec" />
+<partial name="Partial/_ModalLogin" />
+
+@if(Model != null)
+{
+    <div class="card">
+        <div>@Model.doctorName</div>
+        @foreach(VMLokasiCariDokter loc in Model.Locations)
+        {
+            if (loc.endDate == null || loc.endDate >= DateTime.Now)
+            {
+                <div>@loc.namaRumahSakit</div>
+                <div class="btn btn-primary w-25" id="janji-@loc.doctorOfficeId" data-id="@loc.doctorOfficeId" data-bs-toggle="modal" 
+                data-bs-target=@((Context.Session.GetInt32("userId") != null) ? "#staticModal" : "#modalLogin")>buat janji</div>
+            }
+        }
+    </div>
+}
+
+<script>
+
+    if ((@Context.Session.GetInt32("userId") != null)) {
+
+        $(".btn-primary").click(function (event) {
+            let faskesId = $(this).data("id");
+            $("#staticModalBody").load("/BuatJanji/Add?id=" + @Model.id + "&faskesId=" + faskesId);
+
+        });
+    }
+</script>

@@ -1,0 +1,171 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+
+
+#btnMenuDropdown::after {
+/*    display: none;*/
+    margin-right : 15px;
+}
+#dropdownMenuButton1::after{
+    margin-right:5px;
+}
+#btnDropdownHistory::after{
+    display: none;
+}
+#hero {
+    background-color: #ECEEF9;
+    border-radius: 25px;
+    width: 98%;
+    height: 55vh;
+}
+#menu-area {
+    background-color: #ECEEF9;
+    border-radius: 25px;
+    width: 98%;
+    height: fit-content;
+}
+#tagline {
+    margin-left: 3%;
+}
+
+#tagline h1 {
+    font-family: 'Poppins','sans-serif';
+    font-weight: 600;
+    line-height: 3.3rem;
+    font-size: 35px;
+}
+
+#tagline span {
+    color: #FF6B00;
+}
+
+#tagline p {
+    font-family: 'Poppins','sans-serif';
+    font-weight: 500;
+    font-size: 16px;
+}
+#half-hero {
+    width: fit-content;
+    height: 100vh;
+    z-index: 1;
+}
+
+#imgHero {
+    width: fit-content;
+    height: 250px;
+    z-index: 3;
+}
+
+.menu-box{
+    background-color:white;
+}
+#eclipse {
+    width: 18%;
+    right: 15%;
+    top: 20%;
+    z-index: 2;
+}
+
+#btn-daftar-hero {
+    background-color: #0064D3;
+    color: white;
+    font-size: 18px;
+    width: 176px;
+    font-family: 'Poppins','sans-serif';
+    font-weight: 400;
+    border: none;
+    padding: 10px 10px;
+}
+
+#btn-daftar-hero:hover {
+    background-color: yellow;
+    color: black;
+}
+/* file */
+.files input {
+    outline: 2px dashed #92b0b3;
+    outline-offset: -10px;
+    -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+    transition: outline-offset .15s ease-in-out, background-color .15s linear;
+    padding: 120px 0px 85px 35%;
+    text-align: center !important;
+    margin: 0;
+    width: 100% !important;
+    background-image: url(images/ikon/upload.gif);
+}
+
+    .files input:focus {
+        outline: 2px dashed #92b0b3;
+        outline-offset: -10px;
+        -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        transition: outline-offset .15s ease-in-out, background-color .15s linear;
+        border: 1px solid #92b0b3;
+    }
+
+.files {
+    position: relative
+}
+
+    .files:after {
+        pointer-events: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 50px;
+        right: 0;
+        height: 56px;
+        content: "";
+        background-image: url(images/ikon/upload.gif);
+        display: block;
+        margin: 0 auto;
+        background-size: 100%;
+        background-repeat: no-repeat;
+    }
+
+.color input {
+    background-color: #f1f1f1;
+}
+
+.files:before {
+    position: absolute;
+    bottom: 120px;
+    left: 0;
+    pointer-events: none;
+    width: 100%;
+    right: 0;
+    height: 57px;
+    content: "Drag & Drop Gambar Ikon Disini";
+    display: block;
+    margin: 0 auto;
+    color: #0064D3;
+    font-weight: 600;
+    text-transform: capitalize;
+    text-align: center;
+}
+
+.menu {
+    width: 98%;
+}
+
+.menu-box {
+    border-radius: 10px;
+    box-shadow: 5px 5px 40px 20px rgb(243, 243, 243);
+    width: 170px;
+}
+
+.menu-box:hover {
+    background-color: #fff5b1;
+}
+
+#menu-area .menu .menu-box a {
+    color: black;
+    text-decoration: none;
+    font-family: 'Poppins','sans-serif';
+    font-weight: 500;
+}
+.ikon-daftar {
+    height: 90px;
+    width: 90px;
+    padding: 15px 15px;
+}

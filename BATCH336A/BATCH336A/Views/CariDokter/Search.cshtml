@@ -1,0 +1,86 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = null;
+}
+
+
+<form id="frmSearchSpesialis" asp-action="Index" asp-controller="CariDokter">
+    <div>Masukkan minimal 1 kata kunci untuk pencarian dokter anda</div>
+    <div class="card">
+        <div class="card-body">
+            <div class="mt-2">Lokasi</div>
+            <select class="form-select" aria-label="Default select example" name="location">
+                <option selected=""></option>
+                @if (ViewBag.Locations != null)
+                {
+                    @foreach (VMLokasiCariDokter data in ViewBag.Locations)
+                    {
+                        <option value="@data.namaLokasi">@data.namaLokasi</option>
+                    }
+                }
+            </select>
+            <div class="mt-2">Nama Dokter</div>
+            <input id="filter" name="name" type="text" class="form-control" aria-label="Filter" aria-describedby="iSearch" value="@ViewBag.Name">
+            <div class="mt-2">Spesialisasi / Sub-spesialisasi<span class="text-danger">*</span> </div>
+            <select required class="form-select" aria-label="Default select example" name="spec">
+                <option selected=""></option>
+                @if (ViewBag.Specializations != null)
+                {
+                    @foreach (VMMSpecialization data in ViewBag.Specializations)
+                    {
+                        <option value="@data.Name">@data.Name</option>
+                    }
+                }
+            </select>
+            <div>
+                <span id="errorContainer"></span>
+            </div>
+            <div class="mt-2">Tindakan Medis</div>
+            <select class="form-select" aria-label="Default select example" name="treat">
+                    <option selected=""></option>
+                    @if (ViewBag.Treatments != null)
+                    {
+                        @foreach (VMMTindakan data in ViewBag.Treatments)
+                        {
+                            <option value="@data.treatment">@data.treatment</option>
+                        }
+                    }
+            </select>
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <input id="btnSubmit" class="btn btn-primary" type="submit" value="Submit">
+            <button class="btn btn-secondary ms-2" type="button" data-bs-dismiss="modal">cancel</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    $("#staticModalLabel").html("@ViewBag.Title");
+
+    $("#frmSearchSpesialis").validate({
+        errorClass: "text-danger",
+        errorLabelContainer: "#errorContainer",
+        rules: {
+            spec: {
+                "required": true
+            }
+        },
+        messages: {
+            spec: "Nama Spesialisasi / Sub-Spesialisasi harus diisi"
+        }
+    });
+
+    $("#btnSubmit").submit(function (e) {
+        e.preventDefault();
+        
+        if ($("#frmSearchSpesialis").valid()){
+            location.reload("/CariDokter/Index");
+        }
+    })
+
+    // $("#btnSubmit").click(function (e) {
+    //     location.reload("/CariDokter/Index");
+    // })
+</script>

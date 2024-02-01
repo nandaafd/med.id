@@ -1,0 +1,44 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model VMMMedicalItemCategory?
+@{
+    Layout = null;
+}
+
+<div class="card">
+    <div class="card-body">
+        <i class="fas fa-exclamation-triangle float-xxl-start text-danger"></i>
+        <span>Apakah anda yakin mau menghapus kategori = @Model.Name ?</span>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-danger" id="btnDelete">Confirm</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+    </div>
+</div>
+
+<script>
+    $("#staticModalLabel").html("@ViewBag.Title");
+
+    $("#btnDelete").click(() => {
+        $.ajax({
+            url: '/MedicalItemCategory/Delete',
+            type: 'post',
+            data: { "id": @Model.Id, "userId": @Context.Session.GetInt32("userId") },
+            dataType: 'json',
+            beforeSend: function () { },
+            success: function (response) {
+                if (response.statusCode == 200) {
+                    location.reload();
+                }
+                else {
+                    alert(response.message);
+                }
+            },
+            error: function (errResponse) {
+                alert("Delete failed!");
+                debugger;
+            }
+        });
+    });
+</script>

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BATCH336A.DataModel\BATCH336A.DataModel.csproj" />
+    <ProjectReference Include="..\BATCH336A.ViewModel\BATCH336A.ViewModel.csproj" />
+  </ItemGroup>
+
+</Project>
